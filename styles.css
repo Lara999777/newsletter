@@ -973,14 +973,6 @@ body {
         display: none;
     }
 
-    .modal-body #pdf-render-container {
-        display: none;
-    }
-
-    .mobile-pdf-fallback {
-        display: flex;
-    }
-
     .modal-nav {
         width: 40px;
         height: 40px;
