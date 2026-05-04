@@ -175,16 +175,17 @@ function openModal(index) {
     currentVolIndex = index;
     const nl = newsletters[index];
     const backdrop = document.getElementById('modal-backdrop');
-    const viewer = document.getElementById('pdf-viewer');
+    const container = document.getElementById('pdf-render-container');
     const mobileLink = document.getElementById('mobile-download-link');
+    const modalBodyScroll = document.getElementById('modal-body-scroll');
 
     // Update modal header
     document.getElementById('modal-vol-badge').textContent = `vol.${nl.vol}`;
     document.getElementById('modal-title-text').textContent = nl.title;
     document.getElementById('modal-date-text').textContent = nl.date;
 
-    // Load PDF
-    viewer.src = nl.file;
+    // Load PDF via pdf.js
+    renderPDF(nl.file);
     if (mobileLink) {
         mobileLink.href = nl.file;
         mobileLink.download = `앤가네분식_vol${nl.vol}.pdf`;
@@ -201,16 +202,61 @@ function openModal(index) {
 
 function closeModal() {
     const backdrop = document.getElementById('modal-backdrop');
-    const viewer = document.getElementById('pdf-viewer');
+    const container = document.getElementById('pdf-render-container');
 
     backdrop.classList.remove('active');
     document.body.style.overflow = '';
 
     // Clear PDF after animation
     setTimeout(() => {
-        viewer.src = '';
+        container.innerHTML = '';
     }, 400);
     currentVolIndex = -1;
+}
+
+// ── PDF.js Rendering ──
+async function renderPDF(url) {
+    const container = document.getElementById('pdf-render-container');
+    const loader = document.getElementById('pdf-loader');
+    const scrollBox = document.getElementById('modal-body-scroll');
+    
+    // Init state
+    container.innerHTML = '';
+    loader.style.display = 'flex';
+    if (scrollBox) scrollBox.scrollTop = 0;
+
+    try {
+        const loadingTask = pdfjsLib.getDocument(url);
+        const pdf = await loadingTask.promise;
+        const numPages = pdf.numPages;
+
+        for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            
+            // Set scale for high quality rendering (2.0 = double resolution)
+            const viewport = page.getViewport({ scale: 2.0 });
+            
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            container.appendChild(canvas);
+
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+            
+            await page.render(renderContext).promise;
+        }
+    } catch (err) {
+        console.error('Error rendering PDF:', err);
+        container.innerHTML = '<div style="color:white; padding:40px;">PDF를 불러오는 중 오류가 발생했습니다. 다운로드 버튼을 이용해 주세요.</div>';
+    } finally {
+        loader.style.display = 'none';
+    }
 }
 
 function navigateModal(direction) {

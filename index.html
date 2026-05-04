@@ -11,6 +11,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -109,9 +113,13 @@
                 </div>
             </div>
 
-            <div class="modal-body">
-                <!-- PDF Viewer -->
-                <iframe id="pdf-viewer" src="" title="PDF 뷰어"></iframe>
+            <div class="modal-body" id="modal-body-scroll">
+                <!-- PDF Renderer Container -->
+                <div id="pdf-render-container"></div>
+                <div id="pdf-loader" style="display: none;">
+                    <div class="loader-spinner small"></div>
+                    <p>내용을 불러오는 중입니다...</p>
+                </div>
 
                 <!-- Mobile Fallback -->
                 <div class="mobile-pdf-fallback">
