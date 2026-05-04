@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>앤가네 분식 — ENVISION Newsletter Archive</title>
+    <meta name="description" content="앤비젼 사내 뉴스레터 '앤가네 분식' 전체 아카이브. 신규입사자 온보딩 및 사내 소식 열람.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Page Loader -->
+    <div class="page-loader" id="page-loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">뉴스레터를 준비하고 있어요...</div>
+    </div>
+
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="site-header" id="site-header">
+        <a href="#" class="header-brand" id="header-brand-link">
+            <img src="envision_logo_white.png" alt="ENVISION" class="header-logo">
+            <div class="header-title-group">
+                <span class="header-title">앤가네 분식</span>
+                <span class="header-subtitle">ENVISION Newsletter</span>
+            </div>
+        </a>
+        <div class="header-actions">
+            <div class="header-badge">
+                <span class="pulse-dot"></span>
+                총 8호 발행
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-emoji">🍜</div>
+            <h1>앤가네 분식<br>뉴스레터 아카이브</h1>
+            <p class="hero-desc">
+                앤비젼의 다양한 이야기와 소식을 담은 사내 뉴스레터입니다.<br>
+                우리의 문화, 사람, 그리고 함께하는 순간들을 만나보세요.
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">8</div>
+                    <div class="hero-stat-label">발행 호수</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">2024–2026</div>
+                    <div class="hero-stat-label">발행 기간</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">ENVISION</div>
+                    <div class="hero-stat-label">앤비젼 사보</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="section-divider"><hr></div>
+
+    <!-- Newsletter Grid -->
+    <section class="newsletter-section" id="newsletters">
+        <div class="section-header">
+            <div class="section-label">
+                <span class="section-number">ARCHIVE</span>
+                <h2 class="section-title">전체 뉴스레터</h2>
+            </div>
+            <span class="section-count">총 8개의 뉴스레터</span>
+        </div>
+
+        <div class="newsletter-grid" id="newsletter-grid">
+            <!-- Cards rendered by JS -->
+        </div>
+    </section>
+
+    <!-- PDF Viewer Modal -->
+    <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-vol-badge" id="modal-vol-badge">vol.1</span>
+                    <span class="modal-title" id="modal-title-text">앤가네 분식</span>
+                    <span class="modal-date" id="modal-date-text">2024.05</span>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn primary" id="modal-download" title="PDF 다운로드">
+                        <i class="fas fa-download"></i>
+                        <span>다운로드</span>
+                    </button>
+                    <button class="modal-close" id="modal-close" title="닫기 (ESC)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <!-- PDF Viewer -->
+                <iframe id="pdf-viewer" src="" title="PDF 뷰어"></iframe>
+
+                <!-- Mobile Fallback -->
+                <div class="mobile-pdf-fallback">
+                    <i class="fas fa-file-pdf"></i>
+                    <p>모바일 환경에서는 PDF를 직접 다운로드하여 열어주세요.</p>
+                    <a class="download-btn-lg" id="mobile-download-link" href="#" download>
+                        <i class="fas fa-download"></i>
+                        PDF 다운로드
+                    </a>
+                </div>
+
+                <!-- Navigation Arrows -->
+                <button class="modal-nav prev" id="modal-prev" title="이전 호 (←)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="modal-nav next" id="modal-next" title="다음 호 (→)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="modal-footer">
+                <div id="modal-dots"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-brand">
+            <img src="envision_logo_white.png" alt="ENVISION" class="footer-logo">
+        </div>
+        <div class="footer-text">
+            앤비젼 사내 뉴스레터 · 앤가네 분식
+        </div>
+        <div class="footer-copy">
+            &copy; ENVISION. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top-btn" id="scroll-top" title="맨 위로">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
