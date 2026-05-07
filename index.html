@@ -34,17 +34,18 @@
 
     <!-- Header -->
     <header class="site-header" id="site-header">
-        <a href="#" class="header-brand" id="header-brand-link">
-            <img src="envision_logo_white.png" alt="ENVISION" class="header-logo">
+        <a href="../EnVibes/index.html" class="header-brand" id="header-brand-link">
+            <img src="envision_logo_white.png" alt="ENVISION" class="header-logo" onerror="this.src='envision_logo.png'">
             <div class="header-title-group">
                 <span class="header-title">앤가네 분식</span>
                 <span class="header-subtitle">ENVISION Newsletter</span>
             </div>
         </a>
         <div class="header-actions">
+            <button class="btn-icon header-cms-btn" id="open-cms-btn" title="뉴스레터 추가 (Admin)"><i class="fas fa-plus-circle"></i></button>
             <div class="header-badge">
                 <span class="pulse-dot"></span>
-                총 8호 발행
+                <span id="total-vol-count">총 9호 발행</span>
             </div>
         </div>
     </header>
@@ -60,7 +61,7 @@
             </p>
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <div class="hero-stat-value">8</div>
+                    <div class="hero-stat-value" id="hero-stat-count">9</div>
                     <div class="hero-stat-label">발행 호수</div>
                 </div>
                 <div class="hero-stat">
@@ -85,7 +86,7 @@
                 <span class="section-number">ARCHIVE</span>
                 <h2 class="section-title">전체 뉴스레터</h2>
             </div>
-            <span class="section-count">총 8개의 뉴스레터</span>
+            <span class="section-count" id="section-count-text">총 9개의 뉴스레터</span>
         </div>
 
         <div class="newsletter-grid" id="newsletter-grid">
@@ -136,10 +137,56 @@
         </div>
     </div>
 
+    <!-- CMS Modal -->
+    <div class="modal-backdrop" id="cms-modal-backdrop">
+        <div class="modal-container cms-modal-container">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-title">뉴스레터 추가 (Admin)</span>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-close" id="cms-modal-close" title="닫기 (ESC)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body cms-modal-body">
+                <form id="cms-form">
+                    <div class="form-group">
+                        <label>발행 호수 (Vol)</label>
+                        <input type="number" id="cms-vol" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>발행 연월 (예: 2026.05)</label>
+                        <input type="text" id="cms-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>제목</label>
+                        <input type="text" id="cms-title" required value="앤가네 분식 vol.">
+                    </div>
+                    <div class="form-group">
+                        <label>설명 (요약)</label>
+                        <textarea id="cms-desc" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>PDF 파일 업로드</label>
+                        <input type="file" id="cms-file" accept="application/pdf" required>
+                        <small class="form-note">이 브라우저에서만 즉시 열람이 가능하도록 로컬에 저장됩니다. (전체 공유시 GitHub 커밋 필요)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>커버 색상 (CSS Gradient)</label>
+                        <input type="text" id="cms-color" required value="linear-gradient(135deg, #FF8F00, #FFB300)">
+                    </div>
+                    <button type="submit" class="modal-btn primary cms-submit-btn">추가 및 저장</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-brand">
-            <img src="envision_logo_white.png" alt="ENVISION" class="footer-logo">
+            <img src="envision_logo_white.png" alt="ENVISION" class="footer-logo" onerror="this.src='envision_logo.png'">
         </div>
         <div class="footer-text">
             앤비젼 사내 뉴스레터 · 앤가네 분식

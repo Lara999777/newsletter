@@ -75,32 +75,120 @@ const newsletters = [
         file: 'pdfs/vol8.pdf',
         size: '1.5 MB',
         color: 'linear-gradient(135deg, #AD1457, #EC407A)'
+    },
+    {
+        vol: 9,
+        date: '2026.05',
+        title: '앤가네 분식 vol.9',
+        desc: '따뜻한 봄날과 함께 전해드리는 아홉 번째 뉴스레터.',
+        file: 'pdfs/vol9.pdf',
+        size: '1.4 MB',
+        color: 'linear-gradient(135deg, #FF8F00, #FFB300)'
     }
 ];
 
 // Current modal state
 let currentVolIndex = -1;
+let activeNewsletters = [];
+
+// ── IndexedDB CMS Logic ──
+const DB_NAME = 'EnvisionNewsletterDB';
+const STORE_NAME = 'custom_newsletters';
+
+function initDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'vol' });
+            }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function getCustomNewsletters() {
+    try {
+        const db = await initDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        });
+    } catch (e) {
+        console.warn('IndexedDB failed', e);
+        return [];
+    }
+}
+
+async function saveCustomNewsletter(nl) {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.put(nl);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function loadAllNewsletters() {
+    const custom = await getCustomNewsletters();
+    
+    // Process Object URLs for custom PDFs
+    const customWithUrls = custom.map(nl => {
+        if (nl.fileBlob) {
+            nl.file = URL.createObjectURL(nl.fileBlob);
+        }
+        return nl;
+    });
+    
+    const all = [...newsletters];
+    customWithUrls.forEach(cnl => {
+        const idx = all.findIndex(n => n.vol === cnl.vol);
+        if (idx !== -1) all[idx] = cnl;
+        else all.push(cnl);
+    });
+    
+    all.sort((a, b) => a.vol - b.vol);
+    return all;
+}
 
 // ── DOM Ready ──
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    activeNewsletters = await loadAllNewsletters();
+    updateCounts();
     renderCards();
     setupModal();
     setupScrollEffects();
     setupHeader();
     setupScrollTop();
+    setupCMS();
     hideLoader();
 });
+
+function updateCounts() {
+    const count = activeNewsletters.length;
+    document.getElementById('total-vol-count').textContent = `총 ${count}호 발행`;
+    document.getElementById('hero-stat-count').textContent = count;
+    document.getElementById('section-count-text').textContent = `총 ${count}개의 뉴스레터`;
+}
 
 // ── Render Newsletter Cards ──
 function renderCards() {
     const grid = document.getElementById('newsletter-grid');
+    grid.innerHTML = '';
     // Show newest first
-    const reversed = [...newsletters].reverse();
+    const reversed = [...activeNewsletters].reverse();
 
     reversed.forEach((nl, idx) => {
         const isLatest = idx === 0;
         const card = document.createElement('div');
-        card.className = 'newsletter-card';
+        card.className = 'newsletter-card visible';
         card.setAttribute('data-vol', nl.vol);
         card.setAttribute('role', 'button');
         card.setAttribute('tabindex', '0');
@@ -133,11 +221,11 @@ function renderCards() {
             </div>
         `;
 
-        card.addEventListener('click', () => openModal(nl.vol - 1));
+        card.addEventListener('click', () => openModal(activeNewsletters.indexOf(nl)));
         card.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                openModal(nl.vol - 1);
+                openModal(activeNewsletters.indexOf(nl));
             }
         });
 
@@ -173,7 +261,7 @@ function setupModal() {
 
 function openModal(index) {
     currentVolIndex = index;
-    const nl = newsletters[index];
+    const nl = activeNewsletters[index];
     const backdrop = document.getElementById('modal-backdrop');
     const container = document.getElementById('pdf-render-container');
     const mobileLink = document.getElementById('mobile-download-link');
@@ -253,7 +341,12 @@ async function renderPDF(url) {
         }
     } catch (err) {
         console.error('Error rendering PDF:', err);
-        container.innerHTML = '<div style="color:white; padding:40px;">PDF를 불러오는 중 오류가 발생했습니다. 다운로드 버튼을 이용해 주세요.</div>';
+        container.innerHTML = `<div style="width: 100%; height: 80vh; display: flex; flex-direction: column;">
+            <iframe src="${url}" style="width: 100%; height: 100%; flex-grow: 1; border: none; border-radius: 8px; background: white;"></iframe>
+            <div style="padding: 10px; font-size: 0.85rem; color: var(--text-secondary); text-align: center;">
+                브라우저 보안 정책(로컬 파일 접근)으로 인해 자체 뷰어로 표시됩니다.
+            </div>
+        </div>`;
     } finally {
         loader.style.display = 'none';
     }
@@ -261,7 +354,7 @@ async function renderPDF(url) {
 
 function navigateModal(direction) {
     const newIndex = currentVolIndex + direction;
-    if (newIndex < 0 || newIndex >= newsletters.length) return;
+    if (newIndex < 0 || newIndex >= activeNewsletters.length) return;
     openModal(newIndex);
 }
 
@@ -269,14 +362,14 @@ function updateModalNav() {
     const prevBtn = document.getElementById('modal-prev');
     const nextBtn = document.getElementById('modal-next');
     prevBtn.disabled = currentVolIndex <= 0;
-    nextBtn.disabled = currentVolIndex >= newsletters.length - 1;
+    nextBtn.disabled = currentVolIndex >= activeNewsletters.length - 1;
 }
 
 function updateModalDots() {
     const dotsContainer = document.getElementById('modal-dots');
     dotsContainer.innerHTML = '';
 
-    newsletters.forEach((nl, idx) => {
+    activeNewsletters.forEach((nl, idx) => {
         const dot = document.createElement('button');
         dot.className = `modal-page-dot${idx === currentVolIndex ? ' active' : ''}`;
         dot.setAttribute('aria-label', `vol.${nl.vol}`);
@@ -287,7 +380,7 @@ function updateModalDots() {
 
 function downloadCurrentPDF() {
     if (currentVolIndex < 0) return;
-    const nl = newsletters[currentVolIndex];
+    const nl = activeNewsletters[currentVolIndex];
     const link = document.createElement('a');
     link.href = nl.file;
     link.download = `앤가네분식_vol${nl.vol}.pdf`;
@@ -344,4 +437,71 @@ function hideLoader() {
         const loader = document.getElementById('page-loader');
         if (loader) loader.classList.add('hidden');
     }, 600);
+}
+
+// ── CMS (Add Newsletter) Logic ──
+function setupCMS() {
+    const openBtn = document.getElementById('open-cms-btn');
+    const modal = document.getElementById('cms-modal-backdrop');
+    const closeBtn = document.getElementById('cms-modal-close');
+    const form = document.getElementById('cms-form');
+
+    if (!openBtn) return;
+
+    openBtn.addEventListener('click', () => {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('cms-vol').value = activeNewsletters.length + 1;
+        document.getElementById('cms-title').value = `앤가네 분식 vol.${activeNewsletters.length + 1}`;
+    });
+
+    const closeCMS = () => {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        form.reset();
+    };
+
+    closeBtn.addEventListener('click', closeCMS);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeCMS();
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const vol = parseInt(document.getElementById('cms-vol').value);
+        const date = document.getElementById('cms-date').value;
+        const title = document.getElementById('cms-title').value;
+        const desc = document.getElementById('cms-desc').value;
+        const color = document.getElementById('cms-color').value;
+        const fileInput = document.getElementById('cms-file');
+
+        if (!fileInput.files.length) return;
+
+        const file = fileInput.files[0];
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+
+        const newNl = {
+            vol,
+            date,
+            title,
+            desc,
+            size: sizeMb,
+            color,
+            fileBlob: file // Store File object
+        };
+
+        try {
+            await saveCustomNewsletter(newNl);
+            activeNewsletters = await loadAllNewsletters();
+            updateCounts();
+            renderCards();
+            setupScrollEffects(); // re-observe new cards
+            closeCMS();
+            alert('새로운 뉴스레터가 브라우저에 저장되었습니다.');
+        } catch (err) {
+            console.error('Error saving newsletter', err);
+            alert('저장에 실패했습니다.');
+        }
+    });
 }

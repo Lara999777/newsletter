@@ -651,6 +651,86 @@ body {
     border-color: rgba(239, 68, 68, 0.3);
 }
 
+/* ===================== CMS MODAL ===================== */
+.cms-modal-container {
+    max-width: 600px;
+    height: auto;
+    max-height: 90vh;
+}
+.cms-modal-body {
+    padding: 32px;
+}
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.form-group label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+.form-group input, .form-group textarea {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.3s var(--ease);
+}
+.form-group input[type="file"] {
+    padding: 8px;
+    background: transparent;
+    border: 1px dashed var(--border);
+}
+.form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+.form-note {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+.cms-submit-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+    font-size: 15px;
+    margin-top: 10px;
+}
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.btn-icon:hover {
+    color: var(--text-primary);
+}
+.header-cms-btn {
+    margin-right: 10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--bg-glass);
+}
+.header-cms-btn:hover {
+    background: var(--primary-glow);
+    color: var(--primary-light);
+}
+
 /* Modal Body (PDF Viewer) */
 .modal-body {
     flex: 1;
