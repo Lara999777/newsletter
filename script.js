@@ -84,6 +84,15 @@ const newsletters = [
         file: 'pdfs/vol9.pdf',
         size: '1.4 MB',
         color: 'linear-gradient(135deg, #FF8F00, #FFB300)'
+    },
+    {
+        vol: 10,
+        date: '2026.08',
+        title: '앤가네 분식 vol.10',
+        desc: '어느덧 열 번째 이야기. 늦여름의 앤비젼 소식을 담았습니다.',
+        file: 'pdfs/vol10.pdf',
+        size: '1.8 MB',
+        color: 'linear-gradient(135deg, #2E7D32, #66BB6A)'
     }
 ];
 
